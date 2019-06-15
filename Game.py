@@ -1,6 +1,5 @@
 import pygame
 import numpy as np
-import os
 
 import Map
 
@@ -9,6 +8,7 @@ font = pygame.font.SysFont('Helvetica', 10)
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
+RED = (255, 0, 0)
 
 
 class GameConfig:
@@ -52,15 +52,15 @@ class Game:
         scale = self.config.get_y_dim()/8  # pixels
         offset = np.array((scale / 2, -scale / 2))
         centers = []
-        tiles = {}
+        tiles = pygame.sprite.Group()
         positions = {}
         for hex_pos in self.map.grid:
             center = self.config.from_centered_coordinates(scale * np.array(Map.from_hex_to_cart(hex_pos)) - offset)
             centers.append(center)
-            tile = pygame.Surface((scale, scale), pygame.SRCALPHA)
-            pygame.draw.polygon(tile, WHITE, Map.draw_hexagon((scale/2, scale/2), scale/2))
-            tiles[center] = tile
-            positions[center] = font.render('(%.0f,%.0f)' % hex_pos, False, BLACK)
+            tile = Map.Tile(ref_nb=0, hex_pos=hex_pos, pos=center, scale=scale, planet_list=[],
+                            wormhole_letter=None, is_gravity_rift=None)
+            tiles.add(tile)
+            positions[hex_pos] = font.render('(%.0f,%.0f)' % hex_pos, False, RED)
 
         while True:
             self.clock.tick(self.config.get_fps())
@@ -69,16 +69,22 @@ class Game:
                 if event.type == pygame.QUIT:
                     quit()
 
-            for pos in centers:
-                r_hex = tiles[pos].get_rect(topleft=pos)
+            # Updating MAP on hover
+            for tile in tiles:
+                r_hex = tile.image.get_rect(topleft=tile.pos)
                 if r_hex.collidepoint(pygame.mouse.get_pos()):
-                    pygame.draw.polygon(tiles[pos], BLACK, Map.draw_hexagon((scale / 2, scale / 2), scale / 2))
+                    tile.update(pos=tile.pos, image=tile.image, color=BLACK)
                 else:
-                    pygame.draw.polygon(tiles[pos], WHITE, Map.draw_hexagon((scale / 2, scale / 2), scale / 2))
-                self.screen.blit(tiles[pos], pos)
-                r_coords = positions[pos].get_rect()
-                r_coords.center = np.array(pos) + np.array((scale / 2, scale / 2))
-                self.screen.blit(positions[pos], r_coords)
+                    tile.update(pos=tile.pos, image=tile.image, color=WHITE)
+                r_hex.center += np.array((scale / 2, scale / 2))
+                self.screen.blit(positions[tile.hex_pos], r_hex)
+            tiles.draw(self.screen)
+
+            # Drawing HEX coords
+            for tile in tiles:
+                r_hex = tile.image.get_rect(topleft=tile.pos)
+                r_hex.center += np.array((scale / 2, scale / 2))
+                self.screen.blit(positions[tile.hex_pos], r_hex)
 
             pygame.display.update()  # Or pygame.display.flip()
 

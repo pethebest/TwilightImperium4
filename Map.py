@@ -3,6 +3,10 @@ For some information on grid, look axial coordinates in https://www.redblobgames
 """
 import numpy as np
 import math
+import pygame
+
+BLACK = (0, 0, 0)
+WHITE = (255, 255, 255)
 
 # Hex Vectors
 HEX_VECTOR_60 = (1, 0)
@@ -63,14 +67,33 @@ class Map:
         self.grid = _generate_grid(self.size)
 
 
-class Tile:
+class Tile(pygame.sprite.Sprite):
 
     def __init__(self,
                  ref_nb,
+                 hex_pos,
+                 pos,
+                 scale,
                  planet_list,
                  wormhole_letter,
                  is_gravity_rift):
+
+        pygame.sprite.Sprite.__init__(self)
+        self.pos = pos
+        self.scale = scale
+
+        self.hex_pos = hex_pos
         self.ref_nb = ref_nb
         self.planet_list = planet_list
         self.wormhole_letter = wormhole_letter
         self.is_gravity_rift = is_gravity_rift
+
+        self.image = pygame.Surface((scale, scale), pygame.SRCALPHA)
+        pygame.draw.polygon(self.image, WHITE, draw_hexagon((scale / 2, scale / 2), scale / 2))
+        self.rect = self.image.get_rect(topleft=pos)
+
+    def update(self, pos, image, color=WHITE):
+        self.image = pygame.Surface((self.scale, self.scale), pygame.SRCALPHA)
+        pygame.draw.polygon(self.image, color, draw_hexagon((self.scale / 2, self.scale / 2), self.scale / 2))
+        self.rect = self.image.get_rect(topleft=pos)
+
