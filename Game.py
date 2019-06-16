@@ -1,6 +1,8 @@
 import pygame
 import numpy as np
+import random
 
+import Player
 import Map
 
 pygame.font.init()
@@ -39,16 +41,27 @@ class GameConfig:
 
 class Game:
 
-    def __init__(self, fps=60, resolution=(720, 480)):
+    def __init__(self, fps=60,
+                 resolution=(720, 480),
+                 nb_of_players=6):
         self.config = GameConfig(fps, resolution)
         self.screen = pygame.display.set_mode(resolution)
         self.clock = pygame.time.Clock()
         self.map = Map.Map()
         self.image_library = {}
 
+        # Drawing Background
         self.screen.fill(BLACK)
         self.screen.blit(self.get_image('assets/background.jpg'), (0, 0))
 
+        # Initiating Players
+        self.nb_of_players = nb_of_players
+        self.player_list = {}
+        for agenda_order, player_race in enumerate(random.sample(list(Player.Race), nb_of_players)):
+            # We randomly draw a race for now, the ENUM guarantees we draw unique races
+            self.player_list[agenda_order] = Player.Player(agenda_order, initiative_order=None, race=player_race)
+
+        # Generate Map
         scale = self.config.get_y_dim()/8  # pixels
         offset = np.array((scale / 2, -scale / 2))
         centers = []
@@ -76,14 +89,12 @@ class Game:
                     tile.update(pos=tile.pos, image=tile.image, color=BLACK)
                 else:
                     tile.update(pos=tile.pos, image=tile.image, color=WHITE)
-                r_hex.center += np.array((scale / 2, scale / 2))
-                self.screen.blit(positions[tile.hex_pos], r_hex)
             tiles.draw(self.screen)
 
             # Drawing HEX coords
             for tile in tiles:
                 r_hex = tile.image.get_rect(topleft=tile.pos)
-                r_hex.center += np.array((scale / 2, scale / 2))
+                r_hex.center += np.array((scale / 3, scale / 3))
                 self.screen.blit(positions[tile.hex_pos], r_hex)
 
             pygame.display.update()  # Or pygame.display.flip()

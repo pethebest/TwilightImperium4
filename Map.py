@@ -75,8 +75,9 @@ class Tile(pygame.sprite.Sprite):
                  pos,
                  scale,
                  planet_list,
-                 wormhole_letter,
-                 is_gravity_rift):
+                 wormhole_letter=None,
+                 is_gravity_rift=False,
+                 is_home_system=False):
 
         pygame.sprite.Sprite.__init__(self)
         self.pos = pos
@@ -87,6 +88,7 @@ class Tile(pygame.sprite.Sprite):
         self.planet_list = planet_list
         self.wormhole_letter = wormhole_letter
         self.is_gravity_rift = is_gravity_rift
+        self.is_home_system = is_home_system
 
         self.image = pygame.Surface((scale, scale), pygame.SRCALPHA)
         pygame.draw.polygon(self.image, WHITE, draw_hexagon((scale / 2, scale / 2), scale / 2))

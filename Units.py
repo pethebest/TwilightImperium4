@@ -19,7 +19,7 @@ class Unit:
         self.power = power
         self.move = move
         self.capacity = capacity
-        self.production = production # the Arborec has production on their units
+        self.production = production  # the Arborec has production on their units
         self.has_sustain_damage = has_sustain_damage
         self.has_bombardment = has_bombardment
         self.has_anti_fighter_barrage = has_anti_fighter_barrage
@@ -33,4 +33,3 @@ class Structure:
     """
     Structures essentially belong to a planet, they do mot have cost or movement
     """
-
