@@ -12,7 +12,7 @@ class Unit:
                  has_sustain_damage=False,
                  has_bombardment=False,
                  has_anti_fighter_barrage=False,
-                 has_space_cannon = False
+                 has_space_cannon=False
                  ):
 
         self.cost = cost
@@ -33,3 +33,6 @@ class Structure:
     """
     Structures essentially belong to a planet, they do mot have cost or movement
     """
+
+    def __init__(self):
+        pass

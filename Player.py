@@ -20,6 +20,7 @@ class Race(Enum):
     YIN = 16
     YSSARIL = 17
 
+
 class Player:
     """
     A class that deals with everything a player would have to do
@@ -27,9 +28,11 @@ class Player:
 
     def __init__(self, agenda_order,
                  initiative_order=None,
-                 race=None
+                 race=None,
+                 is_speaker=False
                  ):
         self.agenda_order = agenda_order
         self.initiative_order = initiative_order
         self.race = race
+        self.is_speaker = is_speaker
 

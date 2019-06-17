@@ -5,8 +5,12 @@ import numpy as np
 import math
 import pygame
 
+pygame.font.init()
+font = pygame.font.SysFont('Helvetica', 10)
+
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
+RED = (255, 0, 0)
 
 # Hex Vectors
 HEX_VECTOR_60 = (1, 0)
@@ -15,6 +19,29 @@ HEX_VECTOR_0 = (0, 1)
 # Cartesian Vectors
 CART_VECTOR_60 = (1/2, np.sqrt(3)/2)
 CART_VECTOR_0 = (1, 0)
+
+
+def generate_home_system_hex(nb_of_players, size=3):
+    """
+    :param nb_of_players:
+    :param size:
+    :return: the set of all the home systems' hexagonal positions
+    """
+    vec_0 = size * np.array(HEX_VECTOR_0)
+    vec_60 = size * np.array(HEX_VECTOR_60)
+    vec_120 = (vec_60 - vec_0)
+    vec_minus_120 = -vec_60
+    vec_minus_60 = -vec_120
+    vec_180 = -vec_0
+    if nb_of_players == 3:
+        home_systems = set([tuple(x) for x in [vec_0, vec_120, vec_minus_120]])
+    if nb_of_players == 4:
+        home_systems = set([tuple(x) for x in [vec_60, vec_120, vec_minus_60, vec_minus_120]])
+    if nb_of_players == 5:
+        home_systems = set([tuple(x) for x in [vec_0, vec_60, vec_120, vec_minus_60, vec_minus_120]])
+    if nb_of_players == 6:
+        home_systems = set([tuple(x) for x in [vec_0, vec_60, vec_120, vec_minus_60, vec_minus_120, vec_180]])
+    return home_systems
 
 
 def hex_distance(hex_coords1, hex_coords2):
@@ -62,9 +89,31 @@ def draw_hexagon(center_coords, side_length):
 
 class Map:
 
-    def __init__(self, size=3):
+    def __init__(self, config, size=3):
         self.size = size
         self.grid = _generate_grid(self.size)
+        self.config = config
+
+        # Generating Map
+        self.hex_scale = self.config.get_y_dim() / 8  # pixels
+        self.offset = np.array((self.hex_scale / 2, -self.hex_scale / 2))
+        self.centers = []
+        for hex_pos in self.grid:
+            center = self.config.from_centered_coordinates(self.hex_scale * np.array(from_hex_to_cart(hex_pos))
+                - self.offset)
+            self.centers.append(center)
+        self.tiles = pygame.sprite.Group()
+        self.positions = {}
+
+    def create_map(self):
+        for hex_pos, center in zip(self.grid, self.centers):
+            tile = Tile(ref_nb=0, hex_pos=hex_pos, pos=center, scale=self.hex_scale, planet_list=[],
+                        wormhole_letter=None, is_gravity_rift=False)
+            self.tiles.add(tile)
+            self.positions[hex_pos] = font.render('(%.0f,%.0f)' % hex_pos, False, RED)
+
+    def add_head_shots(self):
+        pass
 
 
 class Tile(pygame.sprite.Sprite):
