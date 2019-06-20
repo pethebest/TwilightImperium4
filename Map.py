@@ -21,6 +21,20 @@ CART_VECTOR_60 = (1/2, np.sqrt(3)/2)
 CART_VECTOR_0 = (1, 0)
 
 
+def to_centered_coordinates(cart_coords):
+    surface = pygame.display.get_surface()
+    x_display, y_display = surface.get_width(), surface.get_height()
+    x, y = cart_coords
+    return x - x_display / 2, y_display / 2 - y
+
+
+def from_centered_coordinates(abs_coords):
+    surface = pygame.display.get_surface()
+    x_display, y_display = surface.get_width(), surface.get_height()
+    x, y = abs_coords
+    return x + x_display / 2, y_display / 2 - y
+
+
 def generate_home_system_hex(nb_of_players, size=3):
     """
     :param nb_of_players:
@@ -89,18 +103,18 @@ def draw_hexagon(center_coords, side_length):
 
 class Map:
 
-    def __init__(self, config, size=3):
+    def __init__(self, player_list, size=3):
         self.size = size
+        self.player_list = player_list
         self.grid = _generate_grid(self.size)
-        self.config = config
 
         # Generating Map
-        self.hex_scale = self.config.get_y_dim() / 8  # pixels
+        self.hex_scale = pygame.display.get_surface().get_height() / 8  # pixels
         self.offset = np.array((self.hex_scale / 2, -self.hex_scale / 2))
         self.centers = []
         for hex_pos in self.grid:
-            center = self.config.from_centered_coordinates(self.hex_scale * np.array(from_hex_to_cart(hex_pos))
-                - self.offset)
+            center = from_centered_coordinates(self.hex_scale * np.array(from_hex_to_cart(hex_pos))
+                                               - self.offset)
             self.centers.append(center)
         self.tiles = pygame.sprite.Group()
         self.positions = {}
@@ -112,8 +126,20 @@ class Map:
             self.tiles.add(tile)
             self.positions[hex_pos] = font.render('(%.0f,%.0f)' % hex_pos, False, RED)
 
+    def draw_tiles(self, screen):
+        self.tiles.draw(screen)
+
+    def draw_hex_positions(self, screen):
+        for tile in self.tiles:
+            r_hex = tile.image.get_rect(topleft=tile.pos)
+            r_hex.center += np.array((self.hex_scale / 3, self.hex_scale / 3))
+            screen.blit(self.positions[tile.hex_pos], r_hex)
+
     def add_head_shots(self):
         pass
+
+    def add_home_systems(self, player_list):
+        generate_home_system_hex(len(self.player_list))
 
 
 class Tile(pygame.sprite.Sprite):
