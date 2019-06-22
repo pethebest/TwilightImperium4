@@ -33,6 +33,18 @@ class GameConfig:
         return self.fps
 
 
+class GameMetrics:
+
+    def __init__(self, nb_of_players):
+        # Initiating turn
+        self.turn = 1
+
+        # Initiating Game Metrics
+        self.active_player = 0
+        self.scores = [0 for _ in range(nb_of_players)]
+        self.have_custodians_been_paid = False  # do not include an agenda phase if not
+
+
 class Game:
 
     def __init__(self, fps=60,
@@ -63,18 +75,12 @@ class Game:
                                                           race=player_race,
                                                           is_speaker=is_speaker)
 
-        # Initiating turn
-        self.turn = 1
-
-        # Initiating Game Metrics
-        self.active_player = 0
-        self.scores = [0 for _ in range(nb_of_players)]
-        self.have_custodians_been_paid = False  # do not include an agenda phase if not
+        self.gameMetrics = GameMetrics(nb_of_players)
 
         # Initiating Phase Control
         self.phase_control = PhaseController(screen=self.screen,
                                              player_list=self.player_list,
-                                             have_custodians_been_paid=self.have_custodians_been_paid)
+                                             have_custodians_been_paid=self.gameMetrics.have_custodians_been_paid)
 
     def get_image(self, path):
         image = self.image_library.get(path)
