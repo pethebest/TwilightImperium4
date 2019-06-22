@@ -5,6 +5,8 @@ import numpy as np
 import math
 import pygame
 
+from Graph import Graph, Vertex
+
 pygame.font.init()
 font = pygame.font.SysFont('Helvetica', 10)
 
@@ -49,11 +51,11 @@ def generate_home_system_hex(nb_of_players, size=3):
     vec_180 = -vec_0
     if nb_of_players == 3:
         home_systems = set([tuple(x) for x in [vec_0, vec_120, vec_minus_120]])
-    if nb_of_players == 4:
+    elif nb_of_players == 4:
         home_systems = set([tuple(x) for x in [vec_60, vec_120, vec_minus_60, vec_minus_120]])
-    if nb_of_players == 5:
+    elif nb_of_players == 5:
         home_systems = set([tuple(x) for x in [vec_0, vec_60, vec_120, vec_minus_60, vec_minus_120]])
-    if nb_of_players == 6:
+    else:
         home_systems = set([tuple(x) for x in [vec_0, vec_60, vec_120, vec_minus_60, vec_minus_120, vec_180]])
     return home_systems
 
@@ -83,6 +85,17 @@ def _generate_grid(size=3):
     return [tile for tile in tiles if hex_distance(tile, (0, 0)) <= size]
 
 
+def _generate_graph(grid):
+    graph = Graph()
+    for hex_pos in grid:
+        graph.add_vertex(hex_pos)
+    for hex_pos1 in graph.vertexList:
+        geometric_neighbors = [hex_pos2 for hex_pos2 in grid if hex_distance(hex_pos2, hex_pos1) == 1]
+        for hex_pos2 in geometric_neighbors:
+            graph.add_edge(hex_pos1, hex_pos2)
+    return graph
+
+
 def from_hex_to_cart(hex_coords):
     """
     :param hex_coords: a tuple
@@ -107,6 +120,7 @@ class Map:
         self.size = size
         self.player_list = player_list
         self.grid = _generate_grid(self.size)
+        self.graph = _generate_graph(self.grid)
 
         # Generating Map
         self.hex_scale = pygame.display.get_surface().get_height() / 8  # pixels
@@ -118,6 +132,9 @@ class Map:
             self.centers.append(center)
         self.tiles = pygame.sprite.Group()
         self.positions = {}
+
+        # Generating Graph
+        # WRITE CODE TO ADD THE GRAPH OF THE MAP
 
     def create_map(self):
         for hex_pos, center in zip(self.grid, self.centers):
