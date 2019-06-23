@@ -34,7 +34,8 @@ class StrategyCard(pygame.sprite.Sprite):
 
         self.image_library = {}
         pygame.sprite.Sprite.__init__(self)
-        canonicalized_path = os.path.join('assets', 'Strategy Cards', '%.0f_%s.png' % (self.initiative_value, self.name.lower()))
+        canonicalized_path = os.path.join('assets', 'Strategy Cards', '%.0f_%s.png' %
+                                          (self.initiative_value, self.name.lower()))
         self.image = pygame.image.load(canonicalized_path).convert_alpha()
         self.rect = self.image.get_rect()
 
