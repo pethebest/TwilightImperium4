@@ -36,15 +36,39 @@ class Graph:
     def __contains__(self, hex_pos):
         return hex_pos in self.vertexList
 
-    def add_edge(self, f, t):
-        if f not in self.vertexList:
-            nv = self.add_vertex(f)
-        if t not in self.vertexList:
-            nv = self.add_vertex(t)
-        self.vertexList[f].add_neighbor(self.vertexList[t])
+    def add_edge(self, hex_pos1, hex_pos2):
+        if hex_pos1 not in self.vertexList:
+            nv = self.add_vertex(hex_pos1)
+        if hex_pos2 not in self.vertexList:
+            nv = self.add_vertex(hex_pos2)
+        self.vertexList[hex_pos1].add_neighbor(self.vertexList[hex_pos2])
 
     def get_vertices(self):
         return self.vertexList.keys()
 
     def __iter__(self):
         return iter(self.vertexList.values())
+
+    def breadth_first_search(self, hex_pos, max_depth):
+        """
+        :param hex_pos: is a starting hex (tuple)
+        :param max_depth: is an integer that represents the maximum depth we look at, so for a depth of 1, you get the
+        first neighbors, 2, you get the next neighbors etc... This is similar BUT NOT EQUIVALENT TO DISTANCE, as it is
+        possible to travel back to our starting point with a distance of 2 for instance, in fact it represents the
+        shortest path to a place
+        :return: an array of tuple, the first part of each tuple is an accessible hex, and the second part is its depth
+        """
+        if isinstance(hex_pos, Vertex):
+            hex_pos = hex_pos.get_hex_pos()
+        visited, queue = set(), [(hex_pos, 0)]
+        while queue:
+            vertex, depth = queue.pop(0)
+            if depth == max_depth+1:
+                break
+            if vertex not in visited:
+                visited.add((vertex, depth))
+                list_of_neighbors = set([(v.get_hex_pos(), depth+1) for v in self.vertexList[vertex].get_connections()])
+                queue.extend(list_of_neighbors - visited)
+        return visited
+
+
