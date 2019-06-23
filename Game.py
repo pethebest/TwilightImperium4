@@ -3,7 +3,7 @@ import random
 
 from Player import Player, Race
 import Map
-from Phase import PhaseController, PhaseList, StrategyPhase
+from Phase import PhaseController
 
 pygame.font.init()
 font = pygame.font.SysFont('Helvetica', 10)
@@ -63,17 +63,19 @@ class Game:
 
         # Initiating Players
         self.nb_of_players = nb_of_players
-        self.player_list = {}
+        self.player_list = pygame.sprite.Group()
         self.speaker = random.choice(range(nb_of_players))
+        home_system_hexes = list(Map.generate_home_system_hex(nb_of_players))
         for order_from_speaker, player_race in enumerate(random.sample(list(Race), nb_of_players)):
             # We randomly draw a race for now
             is_speaker = False
             if order_from_speaker == 0:
                 is_speaker = True
-            self.player_list[order_from_speaker] = Player(order_from_speaker,
-                                                          initiative_order=None,
-                                                          race=player_race,
-                                                          is_speaker=is_speaker)
+            self.player_list.add(Player(order_from_speaker,
+                                        home_system_hex=home_system_hexes[order_from_speaker],
+                                        initiative_order=None,
+                                        race=player_race,
+                                        is_speaker=is_speaker))
 
         self.gameMetrics = GameMetrics(nb_of_players)
 
