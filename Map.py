@@ -5,36 +5,12 @@ import numpy as np
 import math
 import pygame
 
-from Graph import Graph, Vertex
+from Tools import from_centered_coordinates, from_hex_to_cart
+from Tools import HEX_VECTOR_60, HEX_VECTOR_0, RED, WHITE
+from Graph import Graph
 
 pygame.font.init()
 font = pygame.font.SysFont('Helvetica', 10)
-
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-RED = (255, 0, 0)
-
-# Hex Vectors
-HEX_VECTOR_60 = (1, 0)
-HEX_VECTOR_0 = (0, 1)
-
-# Cartesian Vectors
-CART_VECTOR_60 = (1/2, np.sqrt(3)/2)
-CART_VECTOR_0 = (1, 0)
-
-
-def to_centered_coordinates(cart_coords):
-    surface = pygame.display.get_surface()
-    x_display, y_display = surface.get_width(), surface.get_height()
-    x, y = cart_coords
-    return x - x_display / 2, y_display / 2 - y
-
-
-def from_centered_coordinates(abs_coords):
-    surface = pygame.display.get_surface()
-    x_display, y_display = surface.get_width(), surface.get_height()
-    x, y = abs_coords
-    return x + x_display / 2, y_display / 2 - y
 
 
 def generate_home_system_hex(nb_of_players, size=3):
@@ -96,14 +72,6 @@ def _generate_graph(grid):
     return graph
 
 
-def from_hex_to_cart(hex_coords):
-    """
-    :param hex_coords: a tuple
-    :return: a tuple of cart coordinates
-    """
-    return tuple(np.array(CART_VECTOR_60) * hex_coords[0] + np.array(CART_VECTOR_0) * hex_coords[1])
-
-
 def draw_hexagon(center_coords, side_length):
     x, y = center_coords
     pts = []
@@ -121,6 +89,7 @@ class Map:
         self.player_list = player_list
         self.grid = _generate_grid(self.size)
         self.graph = _generate_graph(self.grid)
+        self.image_library = {}
 
         # Generating Map
         self.hex_scale = pygame.display.get_surface().get_height() / 8  # pixels
@@ -132,9 +101,7 @@ class Map:
             self.centers.append(center)
         self.tiles = pygame.sprite.Group()
         self.positions = {}
-
-        # Generating Graph
-        # WRITE CODE TO ADD THE GRAPH OF THE MAP
+        self.home_systems = generate_home_system_hex(len(self.player_list))
 
     def create_map(self):
         for hex_pos, center in zip(self.grid, self.centers):
@@ -146,17 +113,22 @@ class Map:
     def draw_tiles(self, screen):
         self.tiles.draw(screen)
 
+    def draw_players(self, screen):
+        self.player_list.draw(screen)
+
     def draw_hex_positions(self, screen):
         for tile in self.tiles:
             r_hex = tile.image.get_rect(topleft=tile.pos)
             r_hex.center += np.array((self.hex_scale / 3, self.hex_scale / 3))
             screen.blit(self.positions[tile.hex_pos], r_hex)
 
-    def add_head_shots(self):
+    def highlight_home_systems(self, player_list):
         pass
 
-    def add_home_systems(self, player_list):
-        generate_home_system_hex(len(self.player_list))
+    def get_image(self, key):
+        if key not in self.image_library:
+            self.image_library[key] = pygame.image.load(key).convert_alpha()
+        return self.image_library[key]
 
 
 class Tile(pygame.sprite.Sprite):

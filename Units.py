@@ -31,7 +31,7 @@ class Unit:
 
 class Structure:
     """
-    Structures essentially belong to a planet, they do mot have cost or movement
+    Structures essentially belong to a planet, they do not have cost or movement
     """
 
     def __init__(self):

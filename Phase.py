@@ -180,6 +180,8 @@ class ActionPhase:
             else:
                 tile.update(pos=tile.pos, image=tile.image, color=WHITE)
         self.map.tiles.draw(screen)
+        self.map.draw_players(screen)
+        self.map.draw_hex_positions(screen)
 
     def erase(self, screen):
         pass
