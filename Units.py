@@ -36,3 +36,19 @@ class Structure:
 
     def __init__(self):
         pass
+
+
+class Dreadnaught(Unit):
+
+    def __init__(self):
+        super().__init__(cost=5,
+                         power=5,
+                         move=1,
+                         capacity=1,
+                         production=None,
+                         has_sustain_damage=True,
+                         has_bombardment=True,
+                         has_anti_fighter_barrage=False,
+                         has_space_cannon=False
+                         )
+
