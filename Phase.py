@@ -1,20 +1,24 @@
 from enum import Enum
 from itertools import cycle
 import pygame
+import numpy as np
 
 from Map import Map
 from Cards import StrategyCardSet, StrategyCard
+
+pygame.font.init()
+largerFont = pygame.font.SysFont('Helvetica', 14)
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
 RED = (255, 0, 0)
 
 
-NB_OF_TURNS_FOR_STRATEGY_PICKS = {
-    3: 2,
-    4: 2,
-    5: 1,
-    6: 1}
+NB_OF_STRATEGY_CARD_DISTRIBUTED = {
+    3: 6,
+    4: 8,
+    5: 5,
+    6: 6}
 
 
 class PhaseList(Enum):
@@ -95,7 +99,7 @@ class PhaseController:
         Initializes a new phase, and returns True if the counter of turn needs updated
         :return:
         """
-        self.phase.erase()  # erases completely the phase
+        self.player_list = self.phase.cleaning()  # finishes the phase, returns the needed info
         is_next_round = self.phaseFlow.next()
         if self.get_phase() == PhaseList.STRATEGY:
             self.phase = StrategyPhase(screen, self.player_list)
@@ -112,10 +116,20 @@ class PhaseController:
         self.phaseFlow = PostCustodianPhaseFlow(current_phase=self.phaseFlow.current_phase)
 
     def handle_event(self, event, screen):
-        if event.type == pygame.KEYDOWN:
+        is_over = self.phase.handle_event(event, screen)
+        if is_over:
             self.next_phase(screen)
-        else:
-            self.phase.handle_event(event, screen)
+
+    def update(self, screen):
+        self.draw_current_player_tracker(screen)
+        self.phase.update(screen)
+
+    def draw_current_player_tracker(self, screen):
+        x_size, y_size = screen.get_size()
+        current_turn = largerFont.render('Current Player is #%.0f - %s' % (self.phase.current_player.agenda_order + 1,
+                                                                           self.phase.current_player.race.name),
+                                         False, BLACK)
+        screen.blit(current_turn, (80 / 100 * x_size, 5 / 100 * y_size))
 
 
 class StrategyPhase:
@@ -130,6 +144,8 @@ class StrategyPhase:
 
         # Generating the cards
         self.player_list = player_list
+        self.player_list_cycle = cycle(player_list)
+        self.current_player = next(self.player_list_cycle)
         self.available_strategy_cards = pygame.sprite.Group()
         for SC in StrategyCardSet:
             strategy_card_sprite = StrategyCard(SC)
@@ -147,14 +163,25 @@ class StrategyPhase:
             SC.update(rect=SC.image.get_rect(center=loc), image=SC.image)
 
     def handle_event(self, event, screen):
-        pass
+        # Have we clicked a tile
+        if event.type == pygame.MOUSEBUTTONUP:
+            for SC in self.available_strategy_cards:
+                if SC.rect.collidepoint(event.pos):
+                    self.current_player.add_strategy_card(SC)
+                    self.current_player = next(self.player_list_cycle)
+                    SC.kill()
+            phase_over = False
+            if NB_OF_STRATEGY_CARD_DISTRIBUTED[len(self.player_list)] == 8 - len(self.available_strategy_cards):
+                phase_over = True
+            return phase_over
 
     def update(self, screen):
         self.available_strategy_cards.draw(screen)
 
-    def erase(self):
+    def cleaning(self):
         for SC in self.available_strategy_cards:
             SC.kill()
+        return self.player_list
 
 
 class ActionPhase:
@@ -167,6 +194,21 @@ class ActionPhase:
         self.map.create_map()
         self.map.draw_tiles(screen)
         self.map.draw_hex_positions(screen)
+
+        # Make sure initiative order is up to date
+        agenda_order = []
+        for player in player_list:
+            player.update_initiative_order()
+            agenda_order.append(player.get_initiative_order())
+        # Reorganizing the player iteration in initiative (absolute bloodbath)
+        iterable = self.player_list.sprites()
+        player_list = pygame.sprite.Group()
+        for i in np.argsort(agenda_order):
+            player_list.add(iterable[i])
+            # iterable[i].remove(self.player_list) # the sprite is in two groups i dont know what that means
+        self.player_list = player_list
+        self.player_list_cycle = cycle(self.player_list)
+        self.current_player = next(self.player_list_cycle)
 
     def handle_event(self, screen, event):
         pass

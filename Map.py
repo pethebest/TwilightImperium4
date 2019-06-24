@@ -86,6 +86,7 @@ class Map:
 
     def __init__(self, player_list, size=3):
         self.size = size
+        self.nb_of_players = len(player_list)
         self.player_list = player_list
         self.grid = _generate_grid(self.size)
         self.graph = _generate_graph(self.grid)
@@ -101,7 +102,7 @@ class Map:
             self.centers.append(center)
         self.tiles = pygame.sprite.Group()
         self.positions = {}
-        self.home_systems = generate_home_system_hex(len(self.player_list))
+        self.home_systems = generate_home_system_hex(self.nb_of_players)
 
     def create_map(self):
         for hex_pos, center in zip(self.grid, self.centers):

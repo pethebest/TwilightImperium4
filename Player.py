@@ -44,12 +44,13 @@ class Player(pygame.sprite.Sprite):
         self.initiative_order = initiative_order
         self.race = race
         self.is_speaker = is_speaker
+        self.strategy_card_list = []
 
         # Sprite part
         pygame.sprite.Sprite.__init__(self)
         self.image_library = {}
         self.scale = pygame.display.get_surface().get_height() / 8
-        self.image = self.get_image(os.path.join('assets', 'Race Logos', self.race.name.lower() + ' (2).png'))
+        self.image = self.get_image(os.path.join('assets', 'Race Logos', self.race.name.lower() + '.png'))
         x_sc, y_sc = self.image.get_size()
         x_size, y_size = pygame.display.get_surface().get_size()
         self.image = pygame.transform.smoothscale(self.image, (int(x_size / 20), int(x_size / 20 * y_sc / x_sc)))
@@ -63,3 +64,16 @@ class Player(pygame.sprite.Sprite):
         if key not in self.image_library:
             self.image_library[key] = pygame.image.load(key).convert_alpha()
         return self.image_library[key]
+
+    def add_strategy_card(self, strategy_card):
+        self.strategy_card_list.append(strategy_card)
+
+    def update_initiative_order(self):
+        self.initiative_order = min([SC.get_initiative_value() for SC in self.strategy_card_list])
+
+    def get_initiative_order(self):
+        return self.initiative_order
+
+    def get_strategy_cards(self):
+        return self.strategy_card_list
+

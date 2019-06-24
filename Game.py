@@ -105,7 +105,7 @@ class Game:
                     quit()
                 self.phase_control.handle_event(event, self.screen)
 
-            self.phase_control.phase.update(self.screen)
+            self.phase_control.update(self.screen)
             pygame.display.update()
 
 

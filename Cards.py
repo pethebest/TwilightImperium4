@@ -43,6 +43,9 @@ class StrategyCard(pygame.sprite.Sprite):
         self.image = image
         self.rect = rect
 
+    def get_initiative_value(self):
+        return self.initiative_value
+
 
 class ObjectiveCard(Card):
     """
