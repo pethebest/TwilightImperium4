@@ -72,11 +72,13 @@ class Game:
             is_speaker = False
             if order_from_speaker == 0:
                 is_speaker = True
-            self.player_list.add(Player(order_from_speaker,
-                                        home_system_hex=home_system_hexes[order_from_speaker],
-                                        initiative_order=None,
-                                        race=player_race,
-                                        is_speaker=is_speaker))
+            this_player = Player(order_from_speaker,
+                                 home_system_hex=home_system_hexes[order_from_speaker],
+                                 initiative_order=None,
+                                 race=player_race,
+                                 is_speaker=is_speaker)
+            this_player.set_starting_units()
+            self.player_list.add(this_player)
 
         self.gameMetrics = GameMetrics(nb_of_players)
 

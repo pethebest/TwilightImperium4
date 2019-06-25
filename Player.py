@@ -2,7 +2,9 @@ import os
 import pygame
 import numpy as np
 
-from Tools import from_centered_coordinates, from_hex_to_cart, WHITE
+from Tools import from_centered_coordinates, from_hex_to_cart
+from Races import STARTING_UNITS
+from Units import Unit
 
 
 class Player(pygame.sprite.Sprite):
@@ -24,7 +26,7 @@ class Player(pygame.sprite.Sprite):
         self.race = race
         self.is_speaker = is_speaker
         self.strategy_card_list = []
-        self.units = []
+        self.units = pygame.sprite.Group()
 
         # Sprite part
         pygame.sprite.Sprite.__init__(self)
@@ -56,4 +58,13 @@ class Player(pygame.sprite.Sprite):
 
     def get_strategy_cards(self):
         return self.strategy_card_list
+
+    def set_starting_units(self):
+        starting_units_dict = STARTING_UNITS[self.race]
+        for unit_type in starting_units_dict.keys():
+            for i in range(starting_units_dict[unit_type]):
+                this_unit = Unit.create(unit_type)
+                this_unit.hex_pos = self.home_system_hex
+                self.units.add(this_unit)
+
 

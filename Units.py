@@ -1,4 +1,7 @@
-class Unit:
+import pygame
+
+
+class Unit(pygame.sprite.Sprite):
     """
     Generic Unit Class
     """
@@ -6,6 +9,7 @@ class Unit:
     subclasses = {}
 
     def __init__(self,
+                 hex_pos=None,
                  cost=None,
                  power=None,
                  move=None,
@@ -17,6 +21,8 @@ class Unit:
                  has_space_cannon=False
                  ):
 
+        # Stats
+        self.hex_pos = hex_pos
         self.cost = cost
         self.power = power
         self.move = move
@@ -26,6 +32,9 @@ class Unit:
         self.has_bombardment = has_bombardment
         self.has_anti_fighter_barrage = has_anti_fighter_barrage
         self.has_space_cannon = has_space_cannon
+
+        # Sprite
+        pygame.sprite.Sprite.__init__(self)
 
     def move(self):
         pass
@@ -50,7 +59,8 @@ class Unit:
 class Dreadnaught(Unit):
 
     def __init__(self):
-        super().__init__(cost=5,
+        super().__init__(hex_pos=None,
+                         cost=5,
                          power=5,
                          move=1,
                          capacity=1,
@@ -60,6 +70,8 @@ class Dreadnaught(Unit):
                          has_anti_fighter_barrage=False,
                          has_space_cannon=False
                          )
+        self.rect = None
+        self.image = None
 
 
 class Structure:
