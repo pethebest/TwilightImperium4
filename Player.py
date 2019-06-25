@@ -1,29 +1,8 @@
-from enum import Enum
 import os
 import pygame
 import numpy as np
 
 from Tools import from_centered_coordinates, from_hex_to_cart, WHITE
-
-
-class Race(Enum):
-    ARBOREC = 1
-    CREUSS = 2
-    HACAN = 3
-    JOL_NAR = 4
-    L1Z1X = 5
-    LETNEV = 6
-    MENTAK = 7
-    MUAAT = 8
-    NAALU = 9
-    NEKRO = 10
-    SAAR = 11
-    SARDAKK_NORR = 12
-    SOL = 13
-    WINNU = 14
-    XXCHA = 15
-    YIN = 16
-    YSSARIL = 17
 
 
 class Player(pygame.sprite.Sprite):
@@ -45,6 +24,7 @@ class Player(pygame.sprite.Sprite):
         self.race = race
         self.is_speaker = is_speaker
         self.strategy_card_list = []
+        self.units = []
 
         # Sprite part
         pygame.sprite.Sprite.__init__(self)

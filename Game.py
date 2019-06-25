@@ -1,7 +1,8 @@
 import pygame
 import random
 
-from Player import Player, Race
+from Races import Race
+from Player import Player
 import Map
 from Phase import PhaseController
 

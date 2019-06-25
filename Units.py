@@ -3,6 +3,8 @@ class Unit:
     Generic Unit Class
     """
 
+    subclasses = {}
+
     def __init__(self,
                  cost=None,
                  power=None,
@@ -28,16 +30,23 @@ class Unit:
     def move(self):
         pass
 
+    # This is meant to register a mapping for the subclasses
+    @classmethod
+    def register_subclass(cls, unit_type):
+        def decorator(subclass):
+            cls.subclasses[unit_type] = subclass
+            return subclass
+        return decorator
 
-class Structure:
-    """
-    Structures essentially belong to a planet, they do not have cost or movement
-    """
+    # This is meant to call to create a unit of the type unit_type with params in params
+    @classmethod
+    def create(cls, unit_type):
+        if unit_type not in cls.subclasses:
+            raise ValueError('Bad unit type {}'.format(unit_type))
+        return cls.subclasses[unit_type]()
 
-    def __init__(self):
-        pass
 
-
+@Unit.register_subclass('Dreadnaught')
 class Dreadnaught(Unit):
 
     def __init__(self):
@@ -52,3 +61,11 @@ class Dreadnaught(Unit):
                          has_space_cannon=False
                          )
 
+
+class Structure:
+    """
+    Structures essentially belong to a planet, they do not have cost or movement
+    """
+
+    def __init__(self):
+        pass
