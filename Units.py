@@ -55,7 +55,7 @@ class Unit(pygame.sprite.Sprite):
         return cls.subclasses[unit_type]()
 
 
-@Unit.register_subclass('Dreadnaught')
+@Unit.register_subclass('Dreadnought')
 class Dreadnaught(Unit):
 
     def __init__(self):

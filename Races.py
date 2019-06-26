@@ -1,5 +1,4 @@
 from enum import Enum
-from Units import Dreadnaught
 
 
 class Race(Enum):
@@ -23,21 +22,21 @@ class Race(Enum):
 
 
 STARTING_UNITS = {
-    Race.ARBOREC: {'Dreadnaught': 1},
-    Race.CREUSS: {'Dreadnaught': 1},
-    Race.HACAN: {'Dreadnaught': 1},
-    Race.JOL_NAR: {'Dreadnaught': 1},
-    Race.L1Z1X: {'Dreadnaught': 1},
-    Race.LETNEV: {'Dreadnaught': 1},
-    Race.MENTAK: {'Dreadnaught': 1},
-    Race.MUAAT: {'Dreadnaught': 1},
-    Race.NAALU: {'Dreadnaught': 1},
-    Race.NEKRO: {'Dreadnaught': 1},
-    Race.SAAR: {'Dreadnaught': 1},
-    Race.SARDAKK_NORR: {'Dreadnaught': 1},
-    Race.SOL: {'Dreadnaught': 1},
-    Race.WINNU: {'Dreadnaught': 1},
-    Race.XXCHA: {'Dreadnaught': 1},
-    Race.YIN: {'Dreadnaught': 1},
-    Race.YSSARIL: {'Dreadnaught': 1},
+    Race.ARBOREC: {'Dreadnought': 1},
+    Race.CREUSS: {'Dreadnought': 1},
+    Race.HACAN: {'Dreadnought': 1},
+    Race.JOL_NAR: {'Dreadnought': 1},
+    Race.L1Z1X: {'Dreadnought': 1},
+    Race.LETNEV: {'Dreadnought': 1},
+    Race.MENTAK: {'Dreadnought': 1},
+    Race.MUAAT: {'Dreadnought': 1},
+    Race.NAALU: {'Dreadnought': 1},
+    Race.NEKRO: {'Dreadnought': 1},
+    Race.SAAR: {'Dreadnought': 1},
+    Race.SARDAKK_NORR: {'Dreadnought': 1},
+    Race.SOL: {'Dreadnought': 1},
+    Race.WINNU: {'Dreadnought': 1},
+    Race.XXCHA: {'Dreadnought': 1},
+    Race.YIN: {'Dreadnought': 1},
+    Race.YSSARIL: {'Dreadnought': 1},
 }
