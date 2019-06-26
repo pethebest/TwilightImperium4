@@ -16,6 +16,7 @@ class Player(pygame.sprite.Sprite):
                  home_system_hex,
                  initiative_order=None,
                  race=None,
+                 color=None,
                  is_speaker=False
                  ):
 
@@ -23,6 +24,7 @@ class Player(pygame.sprite.Sprite):
         self.agenda_order = agenda_order
         self.home_system_hex = home_system_hex
         self.initiative_order = initiative_order
+        self.color = color
         self.race = race
         self.is_speaker = is_speaker
         self.strategy_card_list = []
