@@ -5,7 +5,7 @@ import numpy as np
 import math
 import pygame
 
-from Tools import from_centered_coordinates, from_hex_to_cart
+from Tools import from_centered_coordinates, from_hex_to_cart, get_scale
 from Tools import HEX_VECTOR_60, HEX_VECTOR_0, RED, WHITE
 from Graph import Graph
 
@@ -93,7 +93,7 @@ class Map:
         self.image_library = {}
 
         # Generating Map
-        self.hex_scale = pygame.display.get_surface().get_height() / 8  # pixels
+        self.hex_scale = get_scale()
         self.offset = np.array((self.hex_scale / 2, -self.hex_scale / 2))
         self.centers = []
         for hex_pos in self.grid:
@@ -157,7 +157,7 @@ class Tile(pygame.sprite.Sprite):
 
         self.image = pygame.Surface((scale, scale), pygame.SRCALPHA)
         pygame.draw.polygon(self.image, WHITE, draw_hexagon((scale / 2, scale / 2), scale / 2))
-        self.rect = self.image.get_rect(topleft=pos)
+        self.rect = self.image.get_rect(center=pos)
 
     def update(self, pos, image, color=WHITE):
         self.image = pygame.Surface((self.scale, self.scale), pygame.SRCALPHA)

@@ -2,6 +2,9 @@ from enum import Enum
 import pygame
 import os
 
+from Tools import get_image
+
+
 class Card:
     """
     An abstract class for methods that are common to all cards
@@ -36,7 +39,7 @@ class StrategyCard(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         canonicalized_path = os.path.join('assets', 'Strategy Cards', '%.0f_%s.png' %
                                           (self.initiative_value, self.name.lower()))
-        self.image = pygame.image.load(canonicalized_path).convert_alpha()
+        self.image = get_image(canonicalized_path)
         self.rect = self.image.get_rect()
 
     def update(self, rect, image):

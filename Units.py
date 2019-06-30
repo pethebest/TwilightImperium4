@@ -1,4 +1,8 @@
 import pygame
+import numpy as np
+import os
+
+from Tools import get_image, from_centered_coordinates, from_hex_to_cart, get_scale, get_offset
 
 
 class Unit(pygame.sprite.Sprite):
@@ -56,7 +60,7 @@ class Unit(pygame.sprite.Sprite):
 
 
 @Unit.register_subclass('Dreadnought')
-class Dreadnaught(Unit):
+class Dreadnought(Unit):
 
     def __init__(self):
         super().__init__(hex_pos=None,
@@ -70,8 +74,17 @@ class Dreadnaught(Unit):
                          has_anti_fighter_barrage=False,
                          has_space_cannon=False
                          )
-        self.rect = None
-        self.image = None
+        self.image = get_image(os.path.join('assets', 'Units', 'dreadnought.png'))
+        self.rect = self.image.get_rect()
+
+    def update(self, hex_pos):
+        """
+        A method to place a unit on a specific position (not checking movement)
+        :param hex_pos: the position on the board
+        :return: nothing
+        """
+        self.hex_pos = hex_pos
+        self.rect.center = from_centered_coordinates(get_scale() * np.array(from_hex_to_cart(hex_pos)))
 
 
 class Structure:

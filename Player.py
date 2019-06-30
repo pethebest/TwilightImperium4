@@ -2,7 +2,7 @@ import os
 import pygame
 import numpy as np
 
-from Tools import from_centered_coordinates, from_hex_to_cart
+from Tools import from_centered_coordinates, from_hex_to_cart, get_image
 from Races import STARTING_UNITS
 from Units import Unit
 
@@ -34,7 +34,7 @@ class Player(pygame.sprite.Sprite):
         pygame.sprite.Sprite.__init__(self)
         self.image_library = {}
         self.scale = pygame.display.get_surface().get_height() / 8
-        self.image = self.get_image(os.path.join('assets', 'Race Logos', self.race.name.lower() + '.png'))
+        self.image = get_image(os.path.join('assets', 'Race Logos', self.race.name.lower() + '.png'))
         x_sc, y_sc = self.image.get_size()
         x_size, y_size = pygame.display.get_surface().get_size()
         self.image = pygame.transform.smoothscale(self.image, (int(x_size / 20), int(x_size / 20 * y_sc / x_sc)))
@@ -66,7 +66,12 @@ class Player(pygame.sprite.Sprite):
         for unit_type in starting_units_dict.keys():
             for i in range(starting_units_dict[unit_type]):
                 this_unit = Unit.create(unit_type)
-                this_unit.hex_pos = self.home_system_hex
+                this_unit.update(self.home_system_hex)
                 self.units.add(this_unit)
+
+    def draw_units(self, screen):
+        self.units.draw(screen)
+
+
 
 

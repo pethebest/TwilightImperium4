@@ -223,10 +223,15 @@ class ActionPhase:
                 tile.update(pos=tile.pos, image=tile.image, color=WHITE)
         self.map.tiles.draw(screen)
         self.map.draw_players(screen)
+        self.draw_units(screen)
         self.map.draw_hex_positions(screen)
 
     def erase(self, screen):
         pass
+
+    def draw_units(self, screen):
+        for this_player in self.player_list:
+            this_player.draw_units(screen)
 
 
 class StatusPhase:
