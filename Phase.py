@@ -5,13 +5,9 @@ import numpy as np
 
 from Map import Map
 from Cards import StrategyCardSet, StrategyCard
-
-pygame.font.init()
-largerFont = pygame.font.SysFont('Helvetica', 14)
-
-BLACK = (0, 0, 0)
-WHITE = (255, 255, 255)
-RED = (255, 0, 0)
+from Player import TurnController
+from Tools import BLACK, WHITE
+from UserInterface import UserInterface
 
 
 NB_OF_STRATEGY_CARD_DISTRIBUTED = {
@@ -121,15 +117,7 @@ class PhaseController:
             self.next_phase(screen)
 
     def update(self, screen):
-        self.draw_current_player_tracker(screen)
         self.phase.update(screen)
-
-    def draw_current_player_tracker(self, screen):
-        x_size, y_size = screen.get_size()
-        current_turn = largerFont.render('Current Player is #%.0f - %s' % (self.phase.current_player.agenda_order + 1,
-                                                                           self.phase.current_player.race.name),
-                                         False, BLACK)
-        screen.blit(current_turn, (80 / 100 * x_size, 5 / 100 * y_size))
 
 
 class StrategyPhase:
@@ -146,6 +134,7 @@ class StrategyPhase:
         self.player_list = player_list
         self.player_list_cycle = cycle(player_list)
         self.current_player = next(self.player_list_cycle)
+        self.user_interface = UserInterface(self.current_player)
         self.available_strategy_cards = pygame.sprite.Group()
         for SC in StrategyCardSet:
             strategy_card_sprite = StrategyCard(SC)
@@ -168,15 +157,20 @@ class StrategyPhase:
             for SC in self.available_strategy_cards:
                 if SC.rect.collidepoint(event.pos):
                     self.current_player.add_strategy_card(SC)
-                    self.current_player = next(self.player_list_cycle)
+                    self.move_to_next_player()
                     SC.kill()
             phase_over = False
             if NB_OF_STRATEGY_CARD_DISTRIBUTED[len(self.player_list)] == 8 - len(self.available_strategy_cards):
                 phase_over = True
             return phase_over
 
+    def move_to_next_player(self):
+        self.current_player = next(self.player_list_cycle)
+        self.user_interface.change_main_color(self.current_player.color)
+
     def update(self, screen):
         self.available_strategy_cards.draw(screen)
+        self.user_interface.draw(screen)
 
     def cleaning(self):
         for SC in self.available_strategy_cards:
@@ -200,6 +194,7 @@ class ActionPhase:
         for player in player_list:
             player.update_initiative_order()
             agenda_order.append(player.get_initiative_order())
+
         # Reorganizing the player iteration in initiative (absolute bloodbath)
         iterable = self.player_list.sprites()
         player_list = pygame.sprite.Group()
@@ -209,6 +204,12 @@ class ActionPhase:
         self.player_list = player_list
         self.player_list_cycle = cycle(self.player_list)
         self.current_player = next(self.player_list_cycle)
+        self.turn_controller = TurnController(current_player=self.current_player)
+        self.user_interface = UserInterface(current_player=self.current_player)
+
+    def move_to_next_player(self):
+        self.current_player = next(self.player_list_cycle)
+        self.user_interface.change_main_color(self.current_player.color)
 
     def handle_event(self, screen, event):
         pass
@@ -225,6 +226,7 @@ class ActionPhase:
         self.map.draw_players(screen)
         self.draw_units(screen)
         self.map.draw_hex_positions(screen)
+        self.user_interface.draw(screen)
 
     def erase(self, screen):
         pass
@@ -232,6 +234,7 @@ class ActionPhase:
     def draw_units(self, screen):
         for this_player in self.player_list:
             this_player.draw_units(screen)
+
 
 
 class StatusPhase:

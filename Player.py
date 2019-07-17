@@ -1,10 +1,19 @@
 import os
 import pygame
 import numpy as np
+from enum import Enum
 
 from Tools import from_centered_coordinates, from_hex_to_cart, get_image
 from Races import STARTING_UNITS
 from Units import Unit
+
+
+class TacticalFlow(Enum):
+    ACTIVATION = 1
+    MOVEMENT = 2
+    SPACE_COMBAT = 3
+    INVASION = 4
+    PRODUCTION = 5
 
 
 class Player(pygame.sprite.Sprite):
@@ -73,5 +82,62 @@ class Player(pygame.sprite.Sprite):
         self.units.draw(screen)
 
 
+class ActionType:
 
+    subclasses = {}
+
+    # This is meant to register a mapping for the subclasses
+    @classmethod
+    def register_subclass(cls, action_type):
+        def decorator(subclass):
+            cls.subclasses[action_type] = subclass
+            return subclass
+        return decorator
+
+    # This is meant to call to create a unit of the type unit_type with params in params
+    @classmethod
+    def create(cls, action_type):
+        if action_type not in cls.subclasses:
+            raise ValueError('Bad action type {}'.format(action_type))
+        return cls.subclasses[action_type]()
+
+
+@ActionType.register_subclass('Tactical')
+class TacticalAction(ActionType):
+
+    def __init__(self):
+        self.flow = TacticalFlow
+        self.state = next(self.flow)
+
+
+@ActionType.register_subclass('Strategy')
+class StrategyAction(ActionType):
+
+    def __init__(self):
+        pass
+
+
+@ActionType.register_subclass('Card')
+class CardAction(ActionType):
+
+    def __init__(self):
+        pass
+
+
+@ActionType.register_subclass('Pass')
+class PassAction(ActionType):
+
+    def __init__(self):
+        pass
+
+
+class TurnController:
+    '''
+    TurnController is a class that offers the player a choice of actions (see action in Player module) and let's him
+    decide which one to take, then makes sure the steps of the action are followed
+    '''
+
+    def __init__(self, current_player):
+        self.current_player = current_player
+        self.action_chosen = False
 

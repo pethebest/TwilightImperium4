@@ -41,6 +41,12 @@ def from_centered_coordinates(abs_coords):
     return x + x_display / 2, y_display / 2 - y
 
 
+def from_relative_to_absolute(relative_x, relative_y):
+    surface = pygame.display.get_surface()
+    x_display, y_display = surface.get_width(), surface.get_height()
+    return relative_x * x_display, relative_y* y_display
+
+
 def get_scale():
     return pygame.display.get_surface().get_height() / 8
 
@@ -61,4 +67,12 @@ def get_image(key):
     if key not in image_cache:
         image_cache[key] = pygame.image.load(key).convert_alpha()
     return image_cache[key]
+
+
+
+
+
+
+
+
 
