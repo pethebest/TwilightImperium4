@@ -161,6 +161,6 @@ class Tile(pygame.sprite.Sprite):
 
     def update(self, pos, image, color=WHITE):
         self.image = pygame.Surface((self.scale, self.scale), pygame.SRCALPHA)
-        pygame.draw.polygon(self.image, color, draw_hexagon((self.scale / 2, self.scale / 2), self.scale / 2))
-        self.rect = self.image.get_rect(topleft=pos)
+        self.rect = pygame.draw.polygon(self.image, color, draw_hexagon((self.scale / 2, self.scale / 2), self.scale / 2))
+        self.rect.topleft = pos  # not pixel perfect, requires MASK function to tailor shape to collision
 
